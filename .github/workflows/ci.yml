@@ -1,0 +1,37 @@
+name: CI - Student Registry
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    # Imeto se smenya za vsyaka versiya — ${{ }} e shablon,
+    # koyto GitHub zamestva pri izpulnenie.
+    name: Tests on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Bez tova, padne li edna versiya, GitHub otmenya ostanalite.
+      # Nie iskame da vidim i trite rezultata.
+      fail-fast: false
+      matrix:
+        node-version: [20.x, 22.x, 24.x]
+
+    steps:
+      - name: Vzemi koda
+        uses: actions/checkout@v4
+
+      - name: Sloji Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Instaliray zavisimostite
+        run: npm install
+
+      - name: Pusni testovete
+        run: npm test
